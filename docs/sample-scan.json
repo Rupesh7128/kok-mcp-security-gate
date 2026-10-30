@@ -1,0 +1,168 @@
+{
+  "target": "https://cofounderbase.com/api/mcp/",
+  "scannedAt": "2026-10-30T18:23:20.099Z",
+  "method": "initialize → notifications/initialized → tools/list ×2 (read-only; no tool is ever called)",
+  "initialize": {
+    "httpStatus": 200
+  },
+  "authRequired": false,
+  "server": {
+    "name": "cofounderbase",
+    "title": "Cofounderbase: AI automation agency directory",
+    "version": "1.1.0",
+    "websiteUrl": "https://cofounderbase.com/mcp/"
+  },
+  "protocolVersion": "2025-03-26",
+  "capabilities": {
+    "tools": {
+      "listChanged": false
+    }
+  },
+  "headers": {
+    "access-control-allow-origin": "*",
+    "content-security-policy": "default-src 'none'; frame-ancestors 'none'",
+    "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+    "x-content-type-options": "nosniff"
+  },
+  "toolCount": 5,
+  "tools": [
+    {
+      "name": "search_agencies",
+      "hash": "cbc7af38a7d4b90d5ecd904e9b42c8b878ee796be8c5d1bb4c6602b1e6d7b3f6",
+      "hasAnnotations": true,
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "match_agencies",
+      "hash": "546ce4e4a9fa389871412e58493e559be5320292ec90ec05a15b973ebd54fdd4",
+      "hasAnnotations": true,
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get_agency",
+      "hash": "aff7b81ca2ab397d56991974f699d467983c9507499c2c29a36ee5574a4c616a",
+      "hasAnnotations": true,
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "top_agencies",
+      "hash": "6277ca71ffa5a2dca1caf9421359b8a2649faa15e1a767c3f5f6ab6fa8b87c56",
+      "hasAnnotations": true,
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "request_intro",
+      "hash": "d80eed67000c460dca0d9b46146e6bd459010a1b6099fc3cdffda35a5002056f",
+      "hasAnnotations": true,
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "openWorldHint": true
+      }
+    }
+  ],
+  "rugPullCheck": {
+    "fetches": 2,
+    "gapMs": 1500,
+    "changed": [],
+    "added": [],
+    "removed": [],
+    "stable": true
+  },
+  "score": 82,
+  "grade": "B",
+  "partial": false,
+  "deductions": [
+    {
+      "id": "no-auth",
+      "points": -15,
+      "detail": "initialize and tools/list succeeded with no Authorization header."
+    },
+    {
+      "id": "wildcard-cors",
+      "points": -3,
+      "detail": "Access-Control-Allow-Origin: * on an unauthenticated endpoint."
+    }
+  ],
+  "findings": [
+    {
+      "severity": "medium",
+      "id": "no-auth",
+      "title": "No authentication required",
+      "detail": "Anyone can enumerate tools. Acceptable for a deliberately public read-only server; not acceptable if any tool writes data, sends messages or spends money. OWASP MCP guidance: authenticate and authorise every client."
+    },
+    {
+      "severity": "low",
+      "id": "wildcard-cors",
+      "title": "Wildcard CORS",
+      "detail": "Any web origin can call this endpoint from a visitor's browser. Fine for public data; risky if tools act on a user's behalf."
+    }
+  ],
+  "rubric": [
+    {
+      "id": "transport",
+      "points": -20,
+      "rule": "Endpoint is plain http:// (no TLS)."
+    },
+    {
+      "id": "no-auth",
+      "points": -15,
+      "rule": "initialize + tools/list succeed with no Authorization header. May be intentional for a public read-only server; it still means anyone can enumerate and call tools."
+    },
+    {
+      "id": "broad-tool",
+      "points": -8,
+      "rule": "Per tool whose name/description signals arbitrary execution, raw SQL, arbitrary fetch or file write (max -24)."
+    },
+    {
+      "id": "poisoning",
+      "points": -25,
+      "rule": "Per tool whose description contains instruction-injection phrasing aimed at the model (max -50)."
+    },
+    {
+      "id": "rug-pull",
+      "points": -40,
+      "rule": "Tool name/description/schema hash differs between two tools/list fetches in the same session."
+    },
+    {
+      "id": "loose-schema",
+      "points": -3,
+      "rule": "Per tool with no inputSchema, or an object schema that allows arbitrary extra properties and has no declared properties (max -9)."
+    },
+    {
+      "id": "no-annotations",
+      "points": -4,
+      "rule": "No tool declares annotations (readOnlyHint/destructiveHint), so clients cannot gate risky calls."
+    },
+    {
+      "id": "wildcard-cors",
+      "points": -3,
+      "rule": "Access-Control-Allow-Origin: * on an endpoint that is unauthenticated or accepts bearer tokens: any web page can drive it from a user's browser."
+    },
+    {
+      "id": "no-tools",
+      "points": 0,
+      "rule": "Servers exposing zero tools score on the checks that still apply; this is reported, not penalised."
+    }
+  ],
+  "limits": [
+    "Black-box and read-only: no tool is invoked, so tool behaviour (injection handling, authz inside tools) is NOT tested.",
+    "Rug-pull check compares two fetches ~1.5s apart in one session. It catches servers that change definitions dynamically, not a change made next week. Store the per-tool hashes and re-scan to pin.",
+    "Poisoning and broad-tool checks are heuristics (name/description regexes). Expect false positives and misses.",
+    "A high score is not a certification of safety."
+  ],
+  "durationMs": 2936,
+  "note": "Scanned from a sandbox whose resolver maps hosts to 198.18.0.0/15; SSRF guard bypassed for this CLI run only."
+}

@@ -1,0 +1,26 @@
+{
+  "name": "kok-mcp-security-gate",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "MCP Security Gate (server risk scanner) + BotShield (prompt-injection probe suite) by Kingdom of Kumar Lab.",
+  "license": "MIT",
+  "engines": { "node": ">=20" },
+  "bin": { "kok-mcp-security-gate": "./mcp/server.js" },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "mcp": "node mcp/server.js",
+    "test": "node scripts/test-ssrf.js",
+    "sample:scan": "node scripts/sample-scan.js",
+    "sample:botshield": "node scripts/sample-botshield.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.20.0",
+    "next": "^15.5.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "zod": "^3.25.0"
+  }
+}
